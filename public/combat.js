@@ -272,7 +272,6 @@ function Battle(){
     
   var canvas;
   var context;
-  var interval;
   var sign;
     
   battleRestart();    
@@ -285,14 +284,13 @@ function Battle(){
 		canvas.width = battleWIDTH;
 		canvas.height = battleHEIGHT;
         
-		var interval = setInterval(Update, 16);
-        
 		battleRestart();
 	}
 
-	var Update = function(){
+	this.update = function(){
 		
-        ClearFrame();
+        // The simulation clock drives combat even when the canvas is hidden.
+        if (!document.hidden) ClearFrame();
         UpdateGrid();
         MoveShips();
         DoCombat();
@@ -552,6 +550,7 @@ function battleRestart(){
 			p = ships[i];
 			if (!p.alive) {
         if (p.framesDead<10){
+        if (!document.hidden) {
         //draw explosion
         context.fillStyle=battleEXPLODECOLOR;
         if (p.framesDead<1){
@@ -565,13 +564,16 @@ function battleRestart(){
         context.fillRect(p.x - p.framesDead, p.y + p.framesDead,1,1);
         context.fillRect(p.x + p.framesDead, p.y - p.framesDead,1,1);
         context.fillRect(p.x - p.framesDead, p.y - p.framesDead,1,1);
+        }
         p.framesDead++;
         }
 			}    
 			else {
         MoveSingleShip(p,centroid);
+        if (!document.hidden) {
         context.fillStyle = p.color;  
         context.fillRect(p.x - 1, p.y - 1, 2, 2);  	
+        }
 			}
       
       

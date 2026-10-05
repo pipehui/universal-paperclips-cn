@@ -5,9 +5,13 @@
    * This class encapsulates the game loop logic.
    */
   function GameLoop () {
+    this.clock = new GameClock();
     this.render = new RenderLoop();
-    this.slow = new Loop({ speed: 100 });
-    this.fast = new Loop({ speed: 10 });
+    this.slow = new Loop({ speed: 100, clock: this.clock });
+    this.fast = new Loop({ speed: 10, clock: this.clock });
+    // Legacy game events used to run on paint frames. Give them a fixed 60 Hz
+    // rate so hiding the page (or a high-refresh display) cannot change progress.
+    this.events = new Loop({ speed: 1000 / 60, clock: this.clock });
     this.custom = {};
   }
 
@@ -17,6 +21,7 @@
    * @param {Loop} loop The loop to be added
    */
   GameLoop.prototype.register = function register(name, loop) {
+    loop.config.clock = this.clock;
     this.custom[name] = loop;
   }
 
@@ -26,9 +31,11 @@
   GameLoop.prototype.start = function start() {
     this.slow.start();
     this.fast.start();
+    this.events.start();
     this.render.start();
 
     this.eachCustom( loop => loop.start() );
+    this.clock.start();
   };
 
   /**
@@ -37,9 +44,11 @@
   GameLoop.prototype.stop = function stop() {
     this.slow.stop();
     this.fast.stop();
+    this.events.stop();
     this.render.stop();
 
     this.eachCustom( loop => loop.stop() );
+    this.clock.stop();
   };
 
   /**
@@ -67,6 +76,10 @@
    */
   GameLoop.prototype.onRender = function onRender(callbacks) {
     this.render.add(callbacks);
+  };
+
+  GameLoop.prototype.onEvents = function onEvents(callbacks) {
+    this.events.add(callbacks);
   };
 
   /**

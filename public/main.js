@@ -70,7 +70,6 @@ Paperclips.game.onFast([
 
 Paperclips.game.onRender([
   renderStockList,
-  synchroniseStratPicker,
   buttonUpdate,
   updateStats,
   dismantleLevel(1, chain([
@@ -100,55 +99,16 @@ Paperclips.game.onRender([
   dismantleLevel(5, chain([
     hideElement(btnQcomputeElement),
     dimQuantumChips,
-    endTimerIs(4, 10, chain([
-      incrementWire,
-      renderElement(transWireElement, () => formatWithCommas(wire)),
-    ])),
+    renderElement(transWireElement, () => formatWithCommas(wire)),
     endTimerLevel(4, 10, hideElement(qChipsElements[9])),
-    endTimerIs(4, 60, chain([
-      incrementWire,
-      renderElement(transWireElement, () => formatWithCommas(wire)),
-    ])),
     endTimerLevel(4, 60, hideElement(qChipsElements[8])),
-    endTimerIs(4, 100, chain([
-      incrementWire,
-      renderElement(transWireElement, () => formatWithCommas(wire)),
-    ])),
     endTimerLevel(4, 100, hideElement(qChipsElements[7])),
-    endTimerIs(4, 130, chain([
-      incrementWire,
-      renderElement(transWireElement, () => formatWithCommas(wire)),
-    ])),
     endTimerLevel(4, 130, hideElement(qChipsElements[6])),
-    endTimerIs(4, 150, chain([
-      incrementWire,
-      renderElement(transWireElement, () => formatWithCommas(wire)),
-    ])),
     endTimerLevel(4, 150, hideElement(qChipsElements[5])),
-    endTimerIs(4, 160, chain([
-      incrementWire,
-      renderElement(transWireElement, () => formatWithCommas(wire)),
-    ])),
     endTimerLevel(4, 160, hideElement(qChipsElements[4])),
-    endTimerIs(4, 165, chain([
-      incrementWire,
-      renderElement(transWireElement, () => formatWithCommas(wire)),
-    ])),
     endTimerLevel(4, 165, hideElement(qChipsElements[3])),
-    endTimerIs(4, 169, chain([
-      incrementWire,
-      renderElement(transWireElement, () => formatWithCommas(wire)),
-    ])),
     endTimerLevel(4, 169, hideElement(qChipsElements[2])),
-    endTimerIs(4, 172, chain([
-      incrementWire,
-      renderElement(transWireElement, () => formatWithCommas(wire)),
-    ])),
     endTimerLevel(4, 172, hideElement(qChipsElements[1])),
-    endTimerIs(4, 174, chain([
-      incrementWire,
-      renderElement(transWireElement, () => formatWithCommas(wire)),
-    ])),
     endTimerLevel(4, 174, hideElement(qChipsElements[0])),
     endTimerLevel(4, 250, hideElement(qComputingElement))
   ])),
@@ -157,13 +117,24 @@ Paperclips.game.onRender([
     hideElement(compDivElement),
     hideElement(projectsDivElement)
   ])),
+  endTimerLevel(6, 250, hideElement(creationDivElement))
+]);
+
+Paperclips.game.onEvents([
+  updateInvestmentValues,
+  synchroniseStratPicker,
+  updateGameFlags,
+  updateAutoTourney,
+  dismantleLevel(5, chain(
+    [10, 60, 100, 130, 150, 160, 165, 169, 172, 174].map(time =>
+      endTimerIs(4, time, incrementWire))
+  )),
   whenProjectComplete(project148, incrementEndTimer(1)),
   whenProjectComplete(project211, incrementEndTimer(2)),
   whenProjectComplete(project212, incrementEndTimer(3)),
   whenProjectComplete(project213, incrementEndTimer(4)),
   whenProjectComplete(project215, incrementEndTimer(5)),
   whenProjectComplete(project216, when(() => wire == 0, incrementEndTimer(6))),
-  endTimerLevel(6, 250, hideElement(creationDivElement)),
   endTimerLevel(6, 500, milestoneIs(15, chain([
     playThrenody,
     () => displayMessage("宇宙回形针"),
@@ -186,5 +157,9 @@ Paperclips.game.onRender([
     incrementMilestone
   ])))
 ]);
+
+var combatLoop = new Loop({ speed: 16 });
+combatLoop.add(app.update);
+Paperclips.game.register('combat', combatLoop);
 
 Paperclips.game.start();

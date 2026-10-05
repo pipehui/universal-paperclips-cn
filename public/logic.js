@@ -733,7 +733,7 @@ function incrementMilestone() {
 
 function incrementEndTimer(timer) {
   return function () {
-    window['timer' + timer.toString()]++;
+    window['endTimer' + timer.toString()]++;
   }
 }
 
@@ -1843,6 +1843,27 @@ function blink(element){
 
 
 
+function updateGameFlags() {
+    if (funds >= 5) autoClipperFlag = 1;
+    if (humanFlag === 0) {
+        investmentEngineFlag = 0;
+        wireBuyerFlag = 0;
+    }
+    probeUsedTrust = probeSpeed + probeNav + probeRep + probeHaz +
+        probeFac + probeHarv + probeWire + probeCombat;
+}
+
+function updateAutoTourney() {
+    if (resultsFlag == 1 && autoTourneyFlag == 1 && autoTourneyStatus == 1) {
+        resultsTimer++;
+        if (resultsTimer >= 300 && operations >= tourneyCost) {
+            newTourney();
+            runTourney();
+            resultsTimer = 0;
+        }
+    }
+}
+
 function buttonUpdate(){
 
     if (swarmFlag == 0){
@@ -1896,17 +1917,6 @@ if (wireBuyerFlag==1) {
     } else {
     wireBuyerDivElement.style.display="none";
     }
-
-if (resultsFlag == 1 && autoTourneyFlag == 1 && autoTourneyStatus ==1 && tournamentResultsTableElement.style.display == "") {
-    resultsTimer++;
-
-    if (resultsTimer>=300 && operations>=tourneyCost){
-        newTourney();
-        runTourney();
-        resultsTimer = 0;
-        }
-    }
-
 
 tournamentStuffElement.onmouseover = function() {revealGrid()};
 tournamentStuffElement.onmouseout = function() {revealResults()};
@@ -2057,10 +2067,6 @@ if (autoClipperFlag === 0){
             autoClipperDivElement.style.display="";
             }
 
-            if (funds>=5) {
-                autoClipperFlag = 1;
-            }
-
 if (revPerSecFlag === 0){
 
             revPerSecDivElement.style.display="none";
@@ -2095,8 +2101,6 @@ if (humanFlag === 0){
             businessDivElement.style.display="none";
             manufacturingDivElement.style.display="none";
             trustDivElement.style.display="none";
-            investmentEngineFlag = 0;
-            wireBuyerFlag = 0;
             creationDivElement.style.display="";
             } else {
             businessDivElement.style.display="";
@@ -2188,8 +2192,6 @@ if (qFlag === 0){
 
 
 // PROBE DESIGN
-
-probeUsedTrust = (probeSpeed+probeNav+probeRep+probeHaz+probeFac+probeHarv+probeWire+probeCombat);
 
 probeTrustUsedDisplayElement.innerHTML = probeUsedTrust;
 
@@ -2446,7 +2448,7 @@ function updateStocks(){
 
 // Stock List Display Routine
 
-function renderStockList() {
+function updateInvestmentValues() {
   if (investStratElement.value=="low"){
     riskiness = 7;
   } else if (investStratElement.value=="med"){
@@ -2455,6 +2457,7 @@ function renderStockList() {
     riskiness = 1;
   }
 
+  portfolioSize = stocks.length;
   m = 0;
   for (let i = 0; i < portfolioSize; i++){
     m = m + stocks[i].total;
@@ -2462,7 +2465,9 @@ function renderStockList() {
 
   secTotal = m;
   portTotal = bankroll + secTotal;
+}
 
+function renderStockList() {
   secValueElement.innerHTML = formatWithCommas(secTotal);
   portValueElement.innerHTML = formatWithCommas(portTotal);
 
@@ -3084,7 +3089,7 @@ function round(roundNum){
     function roundLoop(){
     if (rCounter<10){
         runRound();
-        setTimeout(function(){clearGrid();}, 50);
+        Paperclips.game.clock.setTimeout(function(){clearGrid();}, 50);
         } else {
         currentRound++;
         runTourney();
@@ -3100,7 +3105,7 @@ function round(roundNum){
         payoffCellBBElement.style.backgroundColor = "white";
 
 
-        setTimeout(function(){roundLoop();}, 50);
+        Paperclips.game.clock.setTimeout(function(){roundLoop();}, 50);
 
     }
 

@@ -137,7 +137,9 @@
    * setting an iteration ID.
    */
   Loop.prototype.doStart = function doStart() {
-    this.id = setInterval(this.run.bind(this), this.speed);
+    this.id = this.config.clock
+      ? this.config.clock.setInterval(this.run.bind(this), this.speed)
+      : setInterval(this.run.bind(this), this.speed);
   }
 
   /**
@@ -146,7 +148,8 @@
    * the iteration ID.
    */
   Loop.prototype.doStop = function doStop() {
-    clearInterval(this.id);
+    if (this.config.clock) this.config.clock.clearTimer(this.id);
+    else clearInterval(this.id);
     this.id = null;
   }
 

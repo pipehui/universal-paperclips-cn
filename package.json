@@ -6,7 +6,7 @@
   "main": "public/index.html",
   "scripts": {
     "start": "node server.cjs",
-    "test": "node scripts/check-localization.cjs"
+    "test": "node scripts/check-localization.cjs && node --test scripts/game-loop.test.cjs"
   },
   "keywords": [
     "game",

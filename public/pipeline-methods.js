@@ -153,7 +153,7 @@ function endTimerLevel(timer, level, callback) {
 
 function endTimerIs(timer, level, callback) {
   return function () {
-    if(window['endTimer' + timer.toString()] == level) return;
+    if(window['endTimer' + timer.toString()] != level) return;
 
     callback();
   }
